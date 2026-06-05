@@ -1,0 +1,687 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background: #0a0a0c;
+    color: #f3f4f6;
+}
+
+/* Header Banner Setup */
+/* Updated Header Configuration for Sticky Positioning */
+header {
+    position: fixed; /* Fixes the header to the viewport */
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 300px; /* Reduced slightly to optimize scrolling viewable space */
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    padding: 30px 20px;
+    z-index: 100; /* Keeps banner layered above grid content */
+    transition: box-shadow 0.3s ease, height 0.3s ease;
+}
+
+/* Dynamic styling applied via JS when the page scrolls down */
+header.scrolled {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    height: 260px; /* Shrinks slightly when scrolling to give you more grid room */
+}
+
+/* CRITICAL CONTENT SHIFT ADJUSTMENT: 
+   Because the header is now fixed, we must add top padding to the body 
+   or main layout container so the grid doesn't hide underneath the header. */
+main {
+    display: flex;
+    padding: 30px;
+    gap: 30px;
+    margin-top: 300px; /* Exactly matches the height of your fixed header */
+}
+
+
+.header-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(10px) brightness(0.4);
+    transform: scale(1.15);
+    transition: background-image 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 1;
+}
+
+.header-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to bottom, rgba(10,10,12,0.2) 0%, rgba(10,10,12,0.85) 100%);
+    z-index: 2;
+}
+
+.header-content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+}
+
+.track-meta h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.track-meta p {
+    color: #9ca3af;
+    font-size: 0.95rem;
+}
+
+/* Smooth Dynamic Timeline Slider */
+.track-timeline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.time-stamp {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    font-variant-numeric: tabular-nums;
+    width: 40px;
+}
+
+.slider-wrapper {
+    position: relative;
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+#progress-slider {
+    position: absolute;
+    top: -6px; left: 0;
+    width: 100%; height: 16px;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.progress-fill {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 0%;
+    background: #42f5a7;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.slider-wrapper:hover {
+    height: 6px;
+}
+
+/* Control Row Styling */
+.control-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    position: relative;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: #a7a7a7;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
+
+.icon-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+}
+
+.icon-btn:hover {
+    color: #ffffff;
+}
+
+/* Modernized Shuffle/Loop Active States with Glowing Bottom Dot Indicators */
+.icon-btn.active {
+    color: #42f5a7;
+}
+
+.icon-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    width: 4px;
+    height: 4px;
+    background-color: #42f5a7;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #42f5a7;
+}
+
+.main-play-btn {
+    background: #ffffff;
+    border: none;
+    color: #000000;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, background-color 0.2s;
+    padding: 0;
+}
+
+.main-play-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+}
+
+.main-play-btn:hover {
+    transform: scale(1.06);
+    background: #f3f4f6;
+}
+
+/* Modern Volume Bar Configuration */
+.volume-box {
+    position: absolute;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vol-icon {
+    color: #a7a7a7;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.vol-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.vol-icon:hover {
+    color: #ffffff;
+}
+
+#volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 75px;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+/* Lower Layout Area */
+main {
+    display: flex;
+    padding: 30px;
+    gap: 30px;
+}
+
+.grid-container {
+    flex: 3;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 24px;
+}
+
+.song-card {
+    background: #111114;
+    padding: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    border: 1px solid #1f1f23;
+}
+
+.song-card:hover {
+    background: #18181c;
+    transform: translateY(-4px);
+}
+
+.img-container {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.img-container img {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+}
+
+/* COLOR CORRECTION RULE:
+   If a specific image file loads with inverted colors, add this class 
+   or target the image source name to flip it back to normal. */
+.img-container img[src*="inverted"], .fix-colors {
+    filter: invert(100%);
+}
+
+.grid-play-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #42f5a7;
+    color: white;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.song-card:hover .grid-play-btn {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.play-count-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(66, 245, 167, 0.9);
+    color: #0f0f12;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
+    backdrop-filter: blur(4px);
+}
+
+.song-card h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+
+/* Toolbar Layout Layout Components */
+.content-area {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #111114;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #1f1f23;
+    width: fit-content;
+}
+
+.toolbar label {
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+.toolbar select {
+    background: #18181c;
+    color: #fff;
+    border: 1px solid #28282c;
+    padding: 6px 12px;
+    border-radius: 4px;
+    outline: none;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.toolbar select:focus {
+    border-color: #42f5a7;
+}
+
+/* Toolbar Adjustments */
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #111114;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #1f1f23;
+    width: 100%; /* Spans full width of content column */
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #18181c;
+    border: 1px solid #28282c;
+    padding: 6px 12px;
+    border-radius: 6px;
+    flex: 1;
+    max-width: 300px;
+    transition: border-color 0.2s;
+}
+
+.search-box:focus-within {
+    border-color: #42f5a7;
+}
+
+.search-box span {
+    color: #a7a7a7;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-box span:hover {
+    color: #ffffff;
+}
+
+.search-box span svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+#search-input {
+    background: none;
+    border: none;
+    color: #fff;
+    outline: none;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+#search-input::placeholder {
+    color: #6b7280;
+}
+
+.sort-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Pulse Attention Animation */
+@keyframes pulse-attention {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse-attention {
+    animation: pulse-attention 0.4s ease-out;
+}
+
+/* Developer Panel Styles */
+.dev-password-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+}
+
+.dev-password-modal.hidden {
+    display: none;
+}
+
+.dev-password-content {
+    background: #1a1a1e;
+    border: 2px solid #42f5a7;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 350px;
+    box-shadow: 0 12px 40px rgba(66, 245, 167, 0.3);
+}
+
+.dev-password-content h3 {
+    color: #42f5a7;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #42f5a7;
+    padding-bottom: 12px;
+}
+
+.dev-password-content p {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.dev-password-content input {
+    width: 100%;
+    background: #18181c;
+    color: #fff;
+    border: 1px solid #28282c;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.dev-password-content input:focus {
+    outline: none;
+    border-color: #42f5a7;
+    box-shadow: 0 0 8px rgba(66, 245, 167, 0.2);
+}
+
+.dev-password-status {
+    font-size: 0.8rem;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.dev-password-status.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.dev-password-status.success {
+    background: rgba(66, 245, 167, 0.1);
+    color: #42f5a7;
+    border: 1px solid rgba(66, 245, 167, 0.3);
+}
+
+.dev-password-status.info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.dev-password-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dev-btn-secondary {
+    background: #555;
+    color: #fff;
+}
+
+.dev-btn-secondary:hover {
+    background: #666;
+}
+
+.dev-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #1a1a1e;
+    border: 2px solid #42f5a7;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(66, 245, 167, 0.2);
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dev-panel.hidden {
+    display: none;
+}
+
+.dev-panel h3 {
+    color: #42f5a7;
+    font-size: 1rem;
+    margin: 0 0 10px 0;
+    border-bottom: 1px solid #42f5a7;
+    padding-bottom: 8px;
+}
+
+.dev-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dev-btn {
+    background: #42f5a7;
+    color: #0a0a0c;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.dev-btn:hover {
+    background: #2dd494;
+}
+
+.dev-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    background: rgba(66, 245, 167, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(66, 245, 167, 0.2);
+}
+
+.dev-control-group label {
+    color: #9ca3af;
+    font-size: 0.8rem;
+}
+
+.dev-control-group select,
+.dev-control-group input {
+    background: #18181c;
+    color: #fff;
+    border: 1px solid #28282c;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.dev-input-group {
+    display: flex;
+    gap: 6px;
+}
+
+.dev-input-group input {
+    flex: 1;
+}
+
+.dev-input-group button {
+    flex: 1;
+}
+
+.dev-close-btn {
+    background: #555;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: background 0.2s;
+    align-self: flex-end;
+}
+
+.dev-close-btn:hover {
+    background: #666;
+}

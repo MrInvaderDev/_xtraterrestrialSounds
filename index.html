@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>_xtraterrestrial Sounds</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="Icon.png">
+</head>
+<body>
+
+    <!-- Modernized Header Banner with Overlay Controls -->
+    <header id="dynamic-header">
+        <div class="header-bg" id="header-bg"></div>
+        <div class="header-overlay"></div>
+        
+        <div class="header-content">
+            <div class="track-meta">
+                <h1 id="current-title">Select a Song</h1>
+                <p id="current-artist">Click play below to start listening</p>
+            </div>
+
+            <!-- Modern Audio Track Progress Bar -->
+            <div class="track-timeline">
+                <span id="player-time" class="time-stamp">0:00</span>
+                <div class="slider-wrapper">
+                    <input type="range" id="progress-slider" min="0" max="100" step="0.01" value="0">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <span id="player-duration" class="time-stamp">0:00</span>
+            </div>
+
+            <!-- Modern Minimal Control Panel -->
+            <div class="control-panel">
+                <button id="btn-shuffle" class="icon-btn" title="Shuffle">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+                        <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+                    </svg>
+                </button>
+                <button id="btn-prev" class="icon-btn" title="Previous">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M6 4v16h2V4H6zm3.5 8l11-8v16L9.5 12z"/>
+                    </svg>
+                </button>
+                <button id="btn-play-pause" class="main-play-btn" title="Play/Pause">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="play-icon">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="pause-icon" style="display:none;">
+                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                    </svg>
+                </button>
+                <button id="btn-next" class="icon-btn" title="Next">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M24 20v-16h-2V20H24zm-3.5-8-11 8v-16L20.5 12z"/>
+                    </svg>
+                </button>
+                <button id="btn-repeat" class="icon-btn" title="Repeat Off">
+                    <svg class="repeat-all-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="17 2 22 7 17 12"/>
+                        <path d="M3 11a4 4 0 0 1 4-4h14"/>
+                        <polyline points="7 22 2 17 7 12"/>
+                        <path d="M21 13a4 4 0 0 1-4 4H3"/>
+                    </svg>
+                    <svg class="repeat-one-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                        <polyline points="17 2 22 7 17 12"/>
+                        <path d="M3 11a4 4 0 0 1 4-4h14"/>
+                        <polyline points="7 22 2 17 7 12"/>
+                        <path d="M21 13a4 4 0 0 1-4 4H3"/>
+                        <text x="11" y="17" fill="currentColor" font-size="8" text-anchor="middle" font-family="Arial, sans-serif">1</text>
+                    </svg>
+                </button>
+                
+                <div class="volume-box">
+                    <span class="vol-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                        </svg>
+                    </span>
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8">
+                </div>
+            </div>
+        </div>
+    </header>
+
+        <main>
+        <div class="content-area">
+            <!-- Modern Controls Toolbar -->
+            <div class="toolbar">
+                <!-- Search Input Bar -->
+                <div class="search-box">
+                    <span>
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </span>
+                    <input type="text" id="search-input" placeholder="Search songs or artists...">
+                </div>
+
+                <div class="sort-box">
+                    <label for="sort-select">Sort By:</label>
+                    <select id="sort-select">
+                        <option value="alpha" selected>Alphabetical (A-Z)</option>
+                        <option value="artist">Artist Name</option>
+                        <option value="long-short">Duration: Long to Short</option>
+                        <option value="short-long">Duration: Short to Long</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- The Grid of Cover Arts -->
+            <section class="grid-container" id="songs-grid"></section>
+        </div>
+    </main>
+
+
+    <audio id="audio-player"></audio>
+
+    <!-- Dev Panel Password Modal -->
+    <div id="dev-password-modal" class="dev-password-modal hidden">
+        <div class="dev-password-content">
+            <h3>Developer Panel Access</h3>
+            <p>Enter the password sent to your email:</p>
+            <input type="password" id="dev-password-input" placeholder="Enter password...">
+            <p id="dev-password-status" class="dev-password-status"></p>
+            <div class="dev-password-buttons">
+                <button id="dev-password-verify" class="dev-btn">Verify Password</button>
+                <button id="dev-password-request" class="dev-btn dev-btn-secondary">Request New Password</button>
+                <button id="dev-password-cancel" class="dev-close-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Developer Mode Panel -->
+    <div id="dev-panel" class="dev-panel hidden">
+        <div class="dev-panel-content">
+            <h3>Developer Controls</h3>
+            <div class="dev-controls">
+                <button id="dev-reset-all" class="dev-btn">Reset All Play Counts</button>
+                <div class="dev-control-group">
+                    <label for="dev-song-select">Select Song:</label>
+                    <select id="dev-song-select"></select>
+                    <button id="dev-reset-song" class="dev-btn">Reset This Song</button>
+                </div>
+                <div class="dev-control-group">
+                    <label for="dev-custom-count">Set Custom Count:</label>
+                    <div class="dev-input-group">
+                        <input type="number" id="dev-custom-count" min="0" value="0">
+                        <button id="dev-set-count" class="dev-btn">Set Count</button>
+                    </div>
+                </div>
+            </div>
+            <button id="dev-close" class="dev-close-btn">Close (Ctrl+Shift+D)</button>
+        </div>
+    </div>
+
+    <script src="songs.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
