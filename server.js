@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
@@ -11,8 +12,8 @@ const PORT = process.env.PORT || 3000;
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'mr.extraterrestrial.alien@gmail.com',
-        pass: 'yogq swqs pptt ksdr' // App password
+        user: process.env.GMAIL_USER || 'mr.extraterrestrial.alien@gmail.com',
+        pass: process.env.GMAIL_PASSWORD || ''
     }
 });
 
@@ -42,7 +43,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error opening database:', err);
     } else {
-        console.log('Connected to SQLite database');
+        console.log('Connected to SQLite database at:', dbPath);
         initializeDatabase();
     }
 });
@@ -202,6 +203,8 @@ app.post('/api/admin/request-password', async (req, res) => {
     transporter.sendMail(mailOptions, (err, info) => {
         if (err) {
             console.error('Error sending email:', err);
+            console.error('Email config - User:', process.env.GMAIL_USER || 'not set');
+            console.error('Email config - Password:', process.env.GMAIL_PASSWORD ? 'set' : 'not set');
             res.status(500).json({ error: 'Failed to send password email: ' + err.message });
             return;
         }
