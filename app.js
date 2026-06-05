@@ -1,5 +1,5 @@
-// Server Configuration
-const API_URL = 'http://localhost:3000/api';
+// Server Configuration - Dynamic API URL (works locally and deployed)
+const API_URL = `${window.location.protocol}//${window.location.host}/api`;
 
 let currentSongIndex = 0;
 let isPlaying = false;
