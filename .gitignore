@@ -1,7 +1,5 @@
 node_modules/
 playcounts.db
 .env
-Audio/
-Cover Art/
 *.log
 .DS_Store
