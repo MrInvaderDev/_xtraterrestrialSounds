@@ -1,6 +1,9 @@
 // Server Configuration - Dynamic API URL (works locally and deployed)
 const API_URL = `${window.location.protocol}//${window.location.host}/api`;
 
+// Donation URL (update this with your donation link)
+const DONATION_URL = 'https://buymeacoffee.com/invader';
+
 let currentSongIndex = 0;
 let isPlaying = false;
 let isShuffle = false;
@@ -34,6 +37,9 @@ const searchInput = document.getElementById('search-input');
 
 // Application Setup Bootloader Loop
 function initApp() {
+    // Select a random song on load
+    currentSongIndex = Math.floor(Math.random() * songList.length);
+    
     preloadSongDurations().then(() => {
         applySorting(); // Sorts and renders grid automatically
         loadSong(currentSongIndex, false);
@@ -273,10 +279,17 @@ function downloadCurrentSong() {
     
     const link = document.createElement('a');
     link.href = song.audioSrc;
-    link.download = `${song.title} - ${song.artist}.mp3`;
+    link.download = `${song.title}.mp3`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// Donation button functionality
+document.getElementById('btn-donate').addEventListener('click', openDonationLink);
+
+function openDonationLink() {
+    window.open(DONATION_URL, '_blank');
 }
 
 audio.addEventListener('loadedmetadata', () => {
