@@ -71,6 +71,12 @@ function preloadSongDurations() {
 
 // Sorting Evaluation Logic Engine
 function applySorting() {
+    // Ensure songList is loaded
+    if (!songList || !Array.isArray(songList) || songList.length === 0) {
+        console.warn('songList not available yet');
+        return;
+    }
+    
     const sortBy = sortSelect?.value || 'default';
     const query = searchInput?.value?.toLowerCase().trim() || '';
 
@@ -312,9 +318,14 @@ progressSlider.addEventListener('input', () => {
     currentTimeLabel.innerText = formatTime(targetTime);
 });
 
-document.getElementById('volume-slider').addEventListener('input', (e) => {
-    audio.volume = e.target.value;
-});
+const volumeSlider = document.getElementById('volume-slider');
+if (volumeSlider) {
+    volumeSlider.addEventListener('input', (e) => {
+        if (audio) {
+            audio.volume = parseFloat(e.target.value);
+        }
+    });
+}
 
 audio.addEventListener('ended', () => {
     if (repeatMode === 'one') {
@@ -628,4 +639,9 @@ function stopPasswordValidityCheck() {
 }
 
 // Run Application Execution Loop
-initApp();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    // DOM is already loaded
+    setTimeout(initApp, 100);
+}
