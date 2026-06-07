@@ -38,7 +38,7 @@ app.use(cors());
 app.use(express.json());
 
 // Database setup
-const dbPath = path.join(__dirname, 'playcounts.db');
+const dbPath = process.env.DATABASE_PATH || path.join(__dirname, 'playcounts.db');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error opening database:', err);
