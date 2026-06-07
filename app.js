@@ -4,17 +4,12 @@ const API_URL = `${window.location.protocol}//${window.location.host}/api`;
 let currentSongIndex = 0;
 let isPlaying = false;
 let isShuffle = false;
-let repeatMode = 'off'; 
-let lastPlayedSongId = null; // Track last played song to avoid duplicate counts
-let lastCountTime = new Map(); // Track last count timestamp per song (spam protection)
-const COUNT_COOLDOWN_MS = 5000; // 5 second minimum between counts for same song
+let repeatMode = 'off';
 
 // Master Working Arrays
 let workingDisplayList = [...songList]; // Dynamic, filtered array mapping the current layout
 let playbackOrder = [...songList].map((_, i) => i); 
 let animationFrameId = null;
-let playCountUpdateInterval = null;
-const PLAY_COUNT_UPDATE_INTERVAL = 20000; // Update play counts every 20 seconds
 
 // DOM Elements
 const audio = document.getElementById('audio-player');
@@ -39,20 +34,9 @@ const searchInput = document.getElementById('search-input');
 
 // Application Setup Bootloader Loop
 function initApp() {
-    initializeSongsOnServer().then(() => {
-        loadPlayCounts();
-        preloadSongDurations().then(() => {
-            applySorting(); // Sorts and renders grid automatically
-            loadSong(currentSongIndex, false);
-            startPlayCountUpdates(); // Start periodic play count refresh
-        });
-    }).catch(err => {
-        console.warn('Server unavailable, using local mode:', err);
-        preloadSongDurations().then(() => {
-            applySorting();
-            loadSong(currentSongIndex, false);
-            startPlayCountUpdates(); // Start periodic play count refresh
-        });
+    preloadSongDurations().then(() => {
+        applySorting(); // Sorts and renders grid automatically
+        loadSong(currentSongIndex, false);
     });
 }
 
@@ -134,7 +118,6 @@ function renderGrid() {
             <div class="img-container">
                 <img src="${song.coverSrc}" alt="${song.title}" ${inversionClass}>
                 <button class="grid-play-btn">▶</button>
-                <div class="play-count-badge">${formatPlayCount(song.playCount)}</div>
             </div>
             <h4>${song.title}</h4>
             <p style="color: #6b7280; font-size: 0.8rem; margin-top: 4px;">${song.artist}</p>
@@ -169,14 +152,6 @@ function playSong() {
     const pauseIcon = playPauseBtn.querySelector('.pause-icon');
     if (playIcon) playIcon.style.display = 'none';
     if (pauseIcon) pauseIcon.style.display = 'block';
-    
-    // Increment play count only if it's a new song or being resumed from start
-    const currentSongId = songList[currentSongIndex].id;
-    if (lastPlayedSongId !== currentSongId || audio.currentTime === 0) {
-        incrementPlayCount(currentSongId);
-        lastPlayedSongId = currentSongId;
-        renderGrid(); // Update grid to show new play count
-    }
     
     audio.play().catch(err => console.log("Playback interaction blocked:", err));
     
@@ -253,112 +228,7 @@ function formatTime(secs) {
     return `${min}:${sec}`;
 }
 
-function formatPlayCount(count) {
-    if (count < 1000) {
-        return count.toString();
-    }
-    
-    const abbreviations = [
-        { value: 1e15, symbol: 'P' },
-        { value: 1e12, symbol: 'T' },
-        { value: 1e9, symbol: 'B' },
-        { value: 1e6, symbol: 'M' },
-        { value: 1e3, symbol: 'K' }
-    ];
-    
-    for (const { value, symbol } of abbreviations) {
-        if (count >= value) {
-            const formatted = (count / value).toFixed(2).replace(/\.?0+$/, '');
-            return formatted + symbol;
-        }
-    }
-    
-    return count.toString();
-}
 
-// Play Count Management
-async function initializeSongsOnServer() {
-    try {
-        // Initialize all songs on server (idempotent operation)
-        const promises = songList.map(song => 
-            fetch(`${API_URL}/songs/init/${song.id}/${encodeURIComponent(song.title)}/${encodeURIComponent(song.artist)}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            }).catch(() => null)
-        );
-        await Promise.all(promises);
-    } catch (err) {
-        console.warn('Failed to initialize songs on server:', err);
-    }
-}
-
-async function loadPlayCounts() {
-    try {
-        const response = await fetch(`${API_URL}/songs`);
-        if (response.ok) {
-            const serverSongs = await response.json();
-            const countMap = {};
-            serverSongs.forEach(song => {
-                countMap[song.id] = song.playCount;
-            });
-            songList.forEach(song => {
-                if (countMap[song.id] !== undefined) {
-                    song.playCount = countMap[song.id];
-                }
-            });
-        }
-    } catch (err) {
-        console.warn('Failed to load play counts from server:', err);
-    }
-}
-
-async function incrementPlayCount(songId) {
-    const now = Date.now();
-    const lastCount = lastCountTime.get(songId) || 0;
-    
-    // Only increment if cooldown period has passed
-    if (now - lastCount >= COUNT_COOLDOWN_MS) {
-        try {
-            const response = await fetch(`${API_URL}/songs/${songId}/play`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            
-            if (response.ok) {
-                // Update local count and refresh grid
-                const song = songList.find(s => s.id === songId);
-                if (song) {
-                    song.playCount++;
-                    lastCountTime.set(songId, now);
-                    renderGrid();
-                }
-            }
-        } catch (err) {
-            console.warn('Failed to increment play count on server:', err);
-        }
-    }
-}
-
-// Periodic Play Count Updates
-function startPlayCountUpdates() {
-    // Clear any existing interval
-    if (playCountUpdateInterval) {
-        clearInterval(playCountUpdateInterval);
-    }
-    
-    // Set up interval to refresh play counts
-    playCountUpdateInterval = setInterval(async () => {
-        await loadPlayCounts();
-        renderGrid(); // Re-render grid with updated counts
-    }, PLAY_COUNT_UPDATE_INTERVAL);
-}
-
-function stopPlayCountUpdates() {
-    if (playCountUpdateInterval) {
-        clearInterval(playCountUpdateInterval);
-        playCountUpdateInterval = null;
-    }
-}
 
 // Event Configuration Maps
 playPauseBtn.addEventListener('click', () => isPlaying ? pauseSong() : playSong());

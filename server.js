@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
@@ -37,137 +36,7 @@ function generateRandomPassword(length = 8) {
 app.use(cors());
 app.use(express.json());
 
-// Database setup
-const dbPath = process.env.DATABASE_PATH || path.join(__dirname, 'playcounts.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Error opening database:', err);
-    } else {
-        console.log('Connected to SQLite database at:', dbPath);
-        initializeDatabase();
-    }
-});
-
-function initializeDatabase() {
-    db.run(`
-        CREATE TABLE IF NOT EXISTS songs (
-            id INTEGER PRIMARY KEY,
-            title TEXT NOT NULL,
-            artist TEXT NOT NULL,
-            playCount INTEGER DEFAULT 0,
-            lastPlayed DATETIME
-        )
-    `);
-}
-
-// Routes
-
-// Get all songs with play counts
-app.get('/api/songs', (req, res) => {
-    db.all('SELECT * FROM songs ORDER BY id', (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json(rows);
-    });
-});
-
-// Get a single song
-app.get('/api/songs/:id', (req, res) => {
-    db.get('SELECT * FROM songs WHERE id = ?', [req.params.id], (err, row) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        if (!row) {
-            res.status(404).json({ error: 'Song not found' });
-            return;
-        }
-        res.json(row);
-    });
-});
-
-// Increment play count for a song
-app.post('/api/songs/:id/play', (req, res) => {
-    const now = new Date().toISOString();
-    db.run(
-        'UPDATE songs SET playCount = playCount + 1, lastPlayed = ? WHERE id = ?',
-        [now, req.params.id],
-        function(err) {
-            if (err) {
-                res.status(500).json({ error: err.message });
-                return;
-            }
-            if (this.changes === 0) {
-                res.status(404).json({ error: 'Song not found' });
-                return;
-            }
-            res.json({ success: true, id: req.params.id });
-        }
-    );
-});
-
-// Initialize songs from songList (run once)
-app.post('/api/songs/init/:id/:title/:artist', (req, res) => {
-    db.run(
-        'INSERT OR IGNORE INTO songs (id, title, artist, playCount) VALUES (?, ?, ?, 0)',
-        [req.params.id, req.params.title, req.params.artist],
-        function(err) {
-            if (err) {
-                res.status(500).json({ error: err.message });
-                return;
-            }
-            res.json({ success: true });
-        }
-    );
-});
-
-// Developer Admin Routes (play count management)
-app.post('/api/admin/reset-all', (req, res) => {
-    db.run('UPDATE songs SET playCount = 0', function(err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json({ success: true, message: 'All play counts reset to 0' });
-    });
-});
-
-app.post('/api/admin/reset/:id', (req, res) => {
-    db.run('UPDATE songs SET playCount = 0 WHERE id = ?', [req.params.id], function(err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        if (this.changes === 0) {
-            res.status(404).json({ error: 'Song not found' });
-            return;
-        }
-        res.json({ success: true, message: `Play count for song ${req.params.id} reset to 0` });
-    });
-});
-
-app.post('/api/admin/set/:id/:count', (req, res) => {
-    const count = parseInt(req.params.count);
-    if (isNaN(count) || count < 0) {
-        res.status(400).json({ error: 'Invalid count value' });
-        return;
-    }
-    db.run('UPDATE songs SET playCount = ? WHERE id = ?', [count, req.params.id], function(err) {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        if (this.changes === 0) {
-            res.status(404).json({ error: 'Song not found' });
-            return;
-        }
-        res.json({ success: true, message: `Play count for song ${req.params.id} set to ${count}` });
-    });
-});
-
-// Developer Password Management Routes
+// Routes - Dev Panel Only
 app.post('/api/admin/request-password', async (req, res) => {
     const now = Date.now();
     
@@ -270,14 +139,4 @@ app.use(express.static(__dirname));
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-});
-
-// Graceful shutdown
-process.on('SIGINT', () => {
-    db.close((err) => {
-        if (err) {
-            console.error('Error closing database:', err);
-        }
-        process.exit(0);
-    });
 });
