@@ -85,10 +85,10 @@ const songList = [
     },
     {
         id: 13,
-        title: "Nugget Script pt. 2",
+        title: "Nugget Script pt. 3",
         artist: "_xtraterrestrial",
-        audioSrc: "Audio/Nugget Script pt2.mp3",
-        coverSrc: "Cover Art/Nugget Script pt2 Cover.png"
+        audioSrc: "Audio/Nugget Script pt3.mp3",
+        coverSrc: "Cover Art/Nugget Script pt3 Cover.png"
     },
     {
         id: 14,
@@ -110,5 +110,12 @@ const songList = [
         artist: "_xtraterrestrial",
         audioSrc: "Audio/Against The Clock.mp3",
         coverSrc: "Cover Art/Against The Clock Cover.png"
+    },
+    {
+        id: 17,
+        title: "Nugget Script pt. 2",
+        artist: "_xtraterrestrial",
+        audioSrc: "Audio/Nugget Script pt2.mp3",
+        coverSrc: "Cover Art/Nugget Script pt2 Cover.png"
     },
 ]

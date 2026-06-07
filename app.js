@@ -264,6 +264,21 @@ repeatBtn.addEventListener('click', () => {
 
 updateRepeatButtonVisual();
 
+// Download button functionality
+document.getElementById('btn-download').addEventListener('click', downloadCurrentSong);
+
+function downloadCurrentSong() {
+    const song = songList[currentSongIndex];
+    if (!song) return;
+    
+    const link = document.createElement('a');
+    link.href = song.audioSrc;
+    link.download = `${song.title} - ${song.artist}.mp3`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 audio.addEventListener('loadedmetadata', () => {
     durationLabel.innerText = formatTime(audio.duration);
 });

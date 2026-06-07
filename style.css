@@ -239,6 +239,35 @@ main {
     color: #ffffff;
 }
 
+/* Download Button */
+.download-btn {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: none;
+    border: none;
+    color: #a7a7a7;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.download-btn:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.download-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
 #volume-slider {
     -webkit-appearance: none;
     appearance: none;
