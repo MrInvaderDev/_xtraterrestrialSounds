@@ -38,11 +38,15 @@ const searchInput = document.getElementById('search-input');
 // Application Setup Bootloader Loop
 function initApp() {
     // Select a random song on load
-    currentSongIndex = Math.floor(Math.random() * songList.length);
+    if (songList && songList.length > 0) {
+        currentSongIndex = Math.floor(Math.random() * songList.length);
+    }
     
     preloadSongDurations().then(() => {
         applySorting(); // Sorts and renders grid automatically
         loadSong(currentSongIndex, false);
+    }).catch(err => {
+        console.error('Error initializing app:', err);
     });
 }
 
@@ -67,8 +71,8 @@ function preloadSongDurations() {
 
 // Sorting Evaluation Logic Engine
 function applySorting() {
-    const sortBy = sortSelect.value;
-    const query = searchInput.value.toLowerCase().trim();
+    const sortBy = sortSelect?.value || 'default';
+    const query = searchInput?.value?.toLowerCase().trim() || '';
 
     // Step 1: Filter based on your search input text criteria
     if (query !== '') {
@@ -98,6 +102,11 @@ function applySorting() {
 }
 
 function renderGrid() {
+    if (!songsGrid) {
+        console.error('Songs grid element not found');
+        return;
+    }
+    
     songsGrid.innerHTML = '';
     workingDisplayList.forEach((song) => {
         // Find structural index pointer address map inside native source layout array
